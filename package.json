@@ -2,8 +2,9 @@
   "name": "cinematch",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "electron/main.js",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/joddcodes07/CineMatch/issues"
   },
-  "homepage": "https://github.com/joddcodes07/CineMatch#readme"
+  "homepage": "https://github.com/joddcodes07/CineMatch#readme",
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
 }
