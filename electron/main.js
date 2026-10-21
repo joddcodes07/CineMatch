@@ -15,7 +15,7 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.loadURL("https://example.com");
+  mainWindow.loadURL("http://127.0.0.1:5173");
 };
 
 app.whenReady().then(() => {
