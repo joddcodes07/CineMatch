@@ -1,4 +1,3 @@
-
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs/promises");
@@ -15,10 +14,7 @@ function validateMovieIds(movieIds) {
   }
 
   const valid = movieIds.every(
-    (id) =>
-      typeof id === "string" &&
-      id.length > 0 &&
-      id.length <= 200
+    (id) => typeof id === "string" && id.length > 0 && id.length <= 200,
   );
 
   if (!valid) {
@@ -55,7 +51,7 @@ async function writeWatchlist(movieIds) {
   await fs.writeFile(
     watchlistPath(),
     JSON.stringify(validatedIds, null, 2),
-    "utf8"
+    "utf8",
   );
 
   return validatedIds;
@@ -112,7 +108,11 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.loadURL("http://127.0.0.1:5173");
+  if (app.isPackaged) {
+    mainWindow.loadFile(require("path").join(__dirname, "../dist/index.html"));
+  } else {
+    mainWindow.loadURL("http://127.0.0.1:5173");
+  }
 
   mainWindow.on("closed", () => {
     mainWindow = null;

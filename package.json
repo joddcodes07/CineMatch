@@ -1,11 +1,12 @@
 {
   "name": "cinematch",
   "version": "1.0.0",
-  "description": "",
+  "description": "CineMatch - Indian cinema discovery and recommendations",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently -k \"vite --host 127.0.0.1 --strictPort\" \"wait-on http://127.0.0.1:5173 && electron .\"",
-  "build": "vite build"
+    "build": "vite build",
+    "dist:mac": "npm run build && electron-builder --mac dmg"
   },
   "repository": {
     "type": "git",
@@ -20,13 +21,30 @@
   },
   "homepage": "https://github.com/joddcodes07/CineMatch#readme",
   "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.6",
     "electron": "^45.0.0",
+    "electron-builder": "^26.18.0",
     "vite": "^8.3.5",
     "wait-on": "^9.5.1"
   },
   "dependencies": {
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
+  },
+  "build": {
+    "appId": "com.cinematch.desktop",
+    "productName": "CineMatch",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": ["dmg"]
+    }
   }
 }
