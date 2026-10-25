@@ -579,6 +579,34 @@ function App() {
                 {selectedMovie.description}
               </p>
 
+{typeof selectedMovie.matchScore === "number" && (
+  <section className="match-explanation">
+    <div className="match-explanation-heading">
+      <div>
+        <span className="eyebrow">YOUR PREFERENCES</span>
+        <h3>Why this movie?</h3>
+      </div>
+      <span className="match-explanation-score">
+        {selectedMovie.matchScore}% match
+      </span>
+    </div>
+
+    {selectedMovie.matchReasons?.length > 0 ? (
+      <ul className="match-reasons">
+        {selectedMovie.matchReasons.map((reason, index) => (
+          <li key={`${reason}-${index}`}>
+            <span aria-hidden="true">✓</span>
+            {reason}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>No specific preference matches are available for this movie.</p>
+    )}
+  </section>
+)}
+
+
               <button
                 className="primary-button"
                 onClick={() => toggleSave(selectedMovie.id)}

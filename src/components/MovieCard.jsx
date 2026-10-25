@@ -1,43 +1,70 @@
+
 function MovieCard({ movie, onSelect, isSaved, onToggleSave }) {
+  const hasMatchScore = typeof movie.matchScore === "number";
+
   return (
     <article className="movie-card">
       <button
-        className={`poster poster-${movie.accent}`}
+        type="button"
+        className="movie-card-poster"
         onClick={() => onSelect(movie)}
-        aria-label={`View ${movie.title} details`}
+        aria-label={`View details for ${movie.title}`}
       >
-        <span className="poster-brand">CINEMATCH</span>
-        <span className="poster-title">{movie.title}</span>
-        <span className="poster-year">{movie.year}</span>
+        <div className={`movie-poster-art poster-${movie.accent}`}>
+          <span className="poster-brand">CINEMATCH</span>
+          <span className="poster-title">{movie.title}</span>
+          <span className="poster-year">{movie.year}</span>
+        </div>
+
+        {hasMatchScore && (
+          <span className="match-score-badge">
+            {movie.matchScore}% match
+          </span>
+        )}
+      </button>
+
+      <button
+        type="button"
+        className={`save-button ${isSaved ? "is-saved" : ""}`}
+        onClick={() => onToggleSave(movie.id)}
+        aria-label={
+          isSaved
+            ? `Remove ${movie.title} from watchlist`
+            : `Add ${movie.title} to watchlist`
+        }
+        aria-pressed={isSaved}
+      >
+        {isSaved ? "♥" : "♡"}
       </button>
 
       <div className="movie-card-info">
-        <div className="movie-title-row">
-          <button
-            className="movie-title"
-            onClick={() => onSelect(movie)}
-          >
-            {movie.title}
-          </button>
-
-          <button
-            className={`save-button ${isSaved ? "saved" : ""}`}
-            onClick={() => onToggleSave(movie.id)}
-            aria-label={isSaved ? "Remove from watchlist" : "Save to watchlist"}
-            title={isSaved ? "Remove from watchlist" : "Add to watchlist"}
-          >
-            {isSaved ? "♥" : "♡"}
-          </button>
+        <div className="movie-card-heading">
+          <h3>{movie.title}</h3>
+          <span className="movie-rating">★ {movie.rating.toFixed(1)}</span>
         </div>
 
-        <p className="movie-meta">
-          {movie.language} · {movie.year} · {movie.runtime} min
+        <p className="movie-card-meta">
+          {movie.language} <span>·</span> {movie.year}
+          <span>·</span> {movie.runtime} min
         </p>
 
-        <div className="movie-card-bottom">
-          <span className="rating">★ {movie.rating.toFixed(1)}</span>
-          <span className="genre-tag">{movie.genres[0]}</span>
+        <div className="movie-card-genres">
+          {movie.genres.map((genre) => (
+            <span className="genre-tag" key={genre}>
+              {genre}
+            </span>
+          ))}
         </div>
+
+        {hasMatchScore && (
+          <button
+            type="button"
+            className="why-match-button"
+            onClick={() => onSelect(movie)}
+          >
+            Why this match? <span aria-hidden="true">↗</span>
+          </button>
+        )}
       </div>
     </article>
   );
