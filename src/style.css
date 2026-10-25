@@ -965,3 +965,12 @@ button:disabled {
     display: none;
   }
 }
+.watchlist-error {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 100, 100, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 80, 80, 0.08);
+  color: #ffb0b0;
+  font-size: 13px;
+}

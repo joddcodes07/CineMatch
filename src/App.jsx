@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Sidebar from "./components/Sidebar.jsx";
 import MovieCard from "./components/MovieCard.jsx";
 import movies from "./data/movies.js";
@@ -8,6 +8,53 @@ function App() {
   const [search, setSearch] = useState("");
   const [savedIds, setSavedIds] = useState([]);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [watchlistLoading, setWatchlistLoading] = useState(true);
+  const [watchlistError, setWatchlistError] = useState("");
+
+useEffect(() => {
+  let mounted = true;
+  let unsubscribe = () => {};
+
+  async function loadWatchlist() {
+    try {
+      if (!window.cinematch) {
+        throw new Error(
+          "Electron API unavailable. Please run CineMatch using npm run dev."
+        );
+      }
+
+      // Listen for watchlist updates from the main process.
+      unsubscribe = window.cinematch.onWatchlistUpdated((movieIds) => {
+        if (mounted) {
+          setSavedIds(movieIds);
+        }
+      });
+
+      // Request the persisted watchlist from the main process.
+      const movieIds = await window.cinematch.getWatchlist();
+
+      if (mounted) {
+        setSavedIds(movieIds);
+        setWatchlistError("");
+      }
+    } catch (error) {
+      if (mounted) {
+        setWatchlistError(error.message || "Could not load your watchlist.");
+      }
+    } finally {
+      if (mounted) {
+        setWatchlistLoading(false);
+      }
+    }
+  }
+
+  loadWatchlist();
+
+  return () => {
+    mounted = false;
+    unsubscribe();
+  };
+}, []);
 
   const filteredMovies = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -30,13 +77,27 @@ function App() {
 
   const featuredMovie = movies.find((movie) => movie.featured);
 
-  function toggleSave(movieId) {
-    setSavedIds((current) =>
-      current.includes(movieId)
-        ? current.filter((id) => id !== movieId)
-        : [...current, movieId]
+async function toggleSave(movieId) {
+  if (watchlistLoading) return;
+
+  const nextIds = savedIds.includes(movieId)
+    ? savedIds.filter((id) => id !== movieId)
+    : [...savedIds, movieId];
+
+  try {
+    setWatchlistError("");
+
+    // Send the updated IDs to Electron's main process.
+    const savedIdsFromMain =
+      await window.cinematch.saveWatchlist(nextIds);
+
+    setSavedIds(savedIdsFromMain);
+  } catch (error) {
+    setWatchlistError(
+      error.message || "Could not save your watchlist."
     );
   }
+}
 
   function navigate(page) {
     setActivePage(page);
@@ -71,6 +132,11 @@ function App() {
             <span>Made for movie lovers</span>
           </div>
         </header>
+        {watchlistError && (
+  <div role="alert" className="watchlist-error">
+    {watchlistError}
+  </div>
+)}
 
         {activePage === "discover" && !search && (
           <section className="hero">
